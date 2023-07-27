@@ -20,5 +20,6 @@ import pandas as pd
 #         x = self.fc(x)
 #         return x
 
-class PokemonEncoder():
-    
+class PokemonEncoder(nn.Module):
+    def __init__(self, embedding_size):
+        super().__init__()
