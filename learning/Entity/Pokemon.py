@@ -6,7 +6,7 @@ class Pokemon:
         types: list[str],
         egg_groups: list[str],
         base_experience: int,
-        abilities: str,
+        abilities: list[str],
         height: int,
         weight: int,
         stats: list[int],
