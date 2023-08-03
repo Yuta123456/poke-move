@@ -31,15 +31,20 @@ class MoveEncoder(nn.Module):
 
         self.features_nn1 = nn.Linear(14, 32)
         self.features_nn2 = nn.Linear(32, 64)
-        self.features_nn3 = nn.Linear(64, 64)
+        self.features_nn3 = nn.Linear(64, 128)
+
+        self.relu = nn.ReLU()
 
         self.device = device
 
     def forward(self, move: Move):
         bert_output = self.description_forward(move.description)
         bert_output = self.bert_nn1(bert_output)
+        bert_output = self.relu(bert_output)
         bert_output = self.bert_nn2(bert_output)
+        bert_output = self.relu(bert_output)
         bert_output = self.bert_nn3(bert_output)
+        bert_output = self.relu(bert_output)
 
         type_output = self.type_forward(move.move_type)
         damage_class_output = self.damage_class_forward(move.damage_class)
@@ -59,8 +64,11 @@ class MoveEncoder(nn.Module):
         )
 
         features = self.features_nn1(features)
+        features = self.relu(features)
         features = self.features_nn2(features)
+        features = self.relu(features)
         output = self.features_nn3(features)
+        # output = self.relu(output)
         return output
 
     def description_forward(self, description: str):
