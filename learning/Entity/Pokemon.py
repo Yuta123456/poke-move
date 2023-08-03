@@ -15,7 +15,7 @@ class Pokemon:
         is_legendary: bool,
         is_mythical: bool,
         is_baby: bool,
-        growth_rate: int,
+        # growth_rate: int,
     ):
         self.pokemon_id = pokemon_id
         self.name = name
@@ -31,4 +31,4 @@ class Pokemon:
         self.is_legendary = is_legendary
         self.is_mythical = is_mythical
         self.is_baby = is_baby
-        self.growth_rate = growth_rate
+        # self.growth_rate = growth_rate

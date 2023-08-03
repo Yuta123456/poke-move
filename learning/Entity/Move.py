@@ -11,7 +11,7 @@ class Move:
         pp: int,
         priority: int,
         can_learn_machine: bool,
-        stat_changes,
+        # stat_changes,
     ):
         self.move_id = move_id
         self.name = name
@@ -32,4 +32,4 @@ class Move:
         #       }
         #     }
         #   ],
-        self.stat_changes = stat_changes
+        # self.stat_changes = stat_changes
