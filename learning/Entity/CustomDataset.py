@@ -1,12 +1,10 @@
 import os
+import sys
 import pandas as pd
-from torchvision.io import read_image
 from torch.utils.data import Dataset
-from torchvision import transforms
-from transformers import AutoTokenizer, AutoModel
-import numpy as np
-from PIL import Image
 import json
+
+sys.path.append(os.path.abspath("../"))
 from learning.Entity.Move import Move
 
 from learning.Entity.Pokemon import Pokemon
@@ -25,7 +23,7 @@ class PokemonMoveDataset(Dataset):
             pokemons = json.load(f)
         for p in pokemons:
             pokemon = Pokemon(
-                pokemon_id=p["id"],
+                pokemon_id=p["pokemon_id"],
                 name=p["name"],
                 types=p["types"],
                 egg_groups=p["egg_groups"],
@@ -50,9 +48,9 @@ class PokemonMoveDataset(Dataset):
             moves = json.load(f)
         for m in moves:
             move = Move(
-                move_id=m["id"],
+                move_id=m["move_id"],
                 name=m["name"],
-                move_type=m["type"],
+                move_type=m["move_type"],
                 description=m["description"],
                 accuracy=m["accuracy"],
                 damage_class=m["damage_class"],

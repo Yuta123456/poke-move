@@ -13,24 +13,43 @@ from learning.Entity.Pokemon import Pokemon
 class PokemonEncoder(nn.Module):
     def __init__(self, device):
         super().__init__()
-        self.abilities_mapping = json.load(
+        file_path_abilities = (
             "D:/tanaka/Documents/poke-move/data/categorical_mapping/abilities.json"
         )
-        self.species_mapping = json.load(
+
+        file_path_species = (
             "D:/tanaka/Documents/poke-move/data/categorical_mapping/species.json"
         )
-        self.egg_groups_mapping = json.load(
+        file_path_egg_groups = (
             "D:/tanaka/Documents/poke-move/data/categorical_mapping/egg_groups.json"
         )
-        self.shapes_mapping = json.load(
+        file_path_shapes = (
             "D:/tanaka/Documents/poke-move/data/categorical_mapping/shapes.json"
         )
-        self.move_type_mapping = json.load(
+        file_path_move_type = (
             "D:/tanaka/Documents/poke-move/data/categorical_mapping/types.json"
         )
-        self.color_mapping = json.load(
+        file_path_color = (
             "D:/tanaka/Documents/poke-move/data/categorical_mapping/colors.json"
         )
+
+        with open(file_path_abilities) as f:
+            self.abilities_mapping = json.load(f)
+
+        with open(file_path_species) as f:
+            self.species_mapping = json.load(f)
+
+        with open(file_path_egg_groups) as f:
+            self.egg_groups_mapping = json.load(f)
+
+        with open(file_path_shapes) as f:
+            self.shapes_mapping = json.load(f)
+
+        with open(file_path_move_type) as f:
+            self.move_type_mapping = json.load(f)
+
+        with open(file_path_color) as f:
+            self.color_mapping = json.load(f)
 
         self.types_nn = nn.Linear(36, 4)
 

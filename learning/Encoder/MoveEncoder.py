@@ -13,12 +13,18 @@ import json
 class MoveEncoder(nn.Module):
     def __init__(self, device):
         super().__init__()
-        self.move_type_mapping = json.load(
+        file_path_move_type = (
             "D:/tanaka/Documents/poke-move/data/categorical_mapping/types.json"
         )
-        self.damage_class_mapping = json.load(
-            "D:/tanaka/Documents/poke-move/data/categorical_mapping/types.json"
+        file_path_damage_class = (
+            "D:/tanaka/Documents/poke-move/data/categorical_mapping/damage_class.json"
         )
+
+        with open(file_path_move_type) as f:
+            self.move_type_mapping = json.load(f)
+
+        with open(file_path_damage_class) as f:
+            self.damage_class_mapping = json.load(f)
 
         self.tokenizer = AutoTokenizer.from_pretrained("YituTech/conv-bert-base")
         self.bert = AutoModel.from_pretrained("YituTech/conv-bert-base")
