@@ -17,51 +17,61 @@ class PokemonMoveDataset(Dataset):
         self.annotations = pd.read_csv(annotations_file)
         self.pokemons = []
         self.moves = []
-        for pokemon_id in (1, 1011):
-            with open(
-                f"D:/tanaka/Documents/poke-move/data/pokemons/{pokemon_id}.json", "r"
-            ) as f:
-                pokemon_original = json.load(f)
-            with open(
-                f"D:/tanaka/Documents/poke-move/data/pokemon-species/{pokemon_id}.json",
-                "r",
-            ) as f:
-                pokemon_species = json.load(f)
-            types = [t["types"]["name"] for t in pokemon_original["types"]]
-            egg_groups = [e["name"] for e in pokemon_species["egg_groups"]]
-            abilities = [a["ability"]["name"] for a in pokemon_original["abilities"]]
-            stats = [s["base_stat"] for s in pokemon_original["stats"]]
+        with open(
+            "D:/tanaka/Documents/poke-move/data/my-dataset/pokemons.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            pokemons = json.load(f)
+        for p in pokemons:
             pokemon = Pokemon(
-                pokemon_id=pokemon_id,
-                name=pokemon_original["name"],
-                types=types,
-                egg_groups=egg_groups,
-                base_experience=pokemon_original["base_experience"],
-                abilities=abilities,
-                height=pokemon_original["height"],
-                weight=pokemon_original["weight"],
-                stats=stats,
-                color=pokemon_species["color"]["name"],
-                shape=pokemon_species["shape"]["name"],
-                is_legendary=pokemon_species["is_legendary"],
-                is_baby=pokemon_species["is_baby"],
-                is_mythical=pokemon_species["is_mythical"],
+                pokemon_id=p["id"],
+                name=p["name"],
+                types=p["types"],
+                egg_groups=p["egg_groups"],
+                base_experience=p["base_experience"],
+                abilities=p["abilities"],
+                height=p["height"],
+                weight=p["weight"],
+                stats=p["stats"],
+                color=p["color"],
+                shape=p["shape"],
+                is_legendary=p["is_legendary"],
+                is_baby=p["is_baby"],
+                is_mythical=p["is_mythical"],
             )
             self.pokemons.append(pokemon)
-        for move_id in range(1, 901):
-            with open(
-                f"D:/tanaka/Documents/poke-move/data/moves/{move_id}.json", "r"
-            ) as f:
-                move_original = json.load(f)
-                move = Move(
-                    move_id=move_id,
-                    name=move_original["name"],
-                    move_type=move_original["type"]["name"],
-                    description=move_original["flavor_text_entries"],
-                )
+
+        with open(
+            "D:/tanaka/Documents/poke-move/data/my-dataset/moves.json",
+            "r",
+            encoding="utf-8",
+        ) as f:
+            moves = json.load(f)
+        for m in moves:
+            move = Move(
+                move_id=m["id"],
+                name=m["name"],
+                move_type=m["type"],
+                description=m["description"],
+                accuracy=m["accuracy"],
+                damage_class=m["damage_class"],
+                power=m["power"],
+                pp=m["pp"],
+                priority=m["priority"],
+                can_learn_machine=m["can_learn_machine"],
+            )
+            self.moves.append(move)
 
     def __len__(self):
         return len(self.annotations)
 
     def __getitem__(self, idx):
-        return
+        annotion = self.annotations.iloc[idx, :]
+        pokemon_id = int(annotion[0])
+        move_id = int(annotion[1])
+        label = int(annotion[2])
+        if label:
+            _method = annotion[3]
+
+        return self.pokemons[pokemon_id - 1], self.moves[move_id - 1], label
