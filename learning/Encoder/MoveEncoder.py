@@ -57,6 +57,7 @@ class MoveEncoder(nn.Module):
         features = self.relu(features)
         output = self.features_nn3(features)
         # output = self.relu(output)
+        del features, bert_output, type_output, damage_class_output
         return output
 
     def description_forward(self, description: str):
