@@ -4,18 +4,15 @@ import torch.nn.functional as F
 
 
 class ContrastiveLoss(nn.Module):
-    def __init__(self, margin=2.0):
+    def __init__(self, margin):
         super(ContrastiveLoss, self).__init__()
         self.margin = margin
 
-    def forward(self, z1, z2, label):
-        difference = z1 - z2
-        distance_squared = torch.sum(torch.pow(difference, 2), 1)
-        distance = torch.sqrt(distance_squared)
-        negative_distance = self.margin - distance
-        negative_distance = torch.clamp(negative_distance, min=0.0)
-        loss = (
-            label * distance_squared + (1 - label) * torch.pow(negative_distance, 2)
-        ) / 2.0
-        loss = torch.sum(loss) / z1.size()[0]
-        return loss
+    def forward(self, output1, output2, label):
+        euclidean_distance = nn.functional.pairwise_distance(output1, output2)
+        loss_contrastive = torch.mean(
+            (1 - label) * torch.pow(euclidean_distance, 2)
+            + (label)
+            * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2)
+        )
+        return loss_contrastive

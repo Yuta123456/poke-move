@@ -13,18 +13,6 @@ import json
 class MoveEncoder(nn.Module):
     def __init__(self, device):
         super().__init__()
-        file_path_move_type = (
-            "D:/tanaka/Documents/poke-move/data/categorical_mapping/types.json"
-        )
-        file_path_damage_class = (
-            "D:/tanaka/Documents/poke-move/data/categorical_mapping/damage_class.json"
-        )
-
-        with open(file_path_move_type) as f:
-            self.move_type_mapping = json.load(f)
-
-        with open(file_path_damage_class) as f:
-            self.damage_class_mapping = json.load(f)
 
         self.tokenizer = AutoTokenizer.from_pretrained("YituTech/conv-bert-base")
         self.bert = AutoModel.from_pretrained("YituTech/conv-bert-base")
@@ -43,8 +31,9 @@ class MoveEncoder(nn.Module):
 
         self.device = device
 
-    def forward(self, move: Move):
-        bert_output = self.description_forward(move.description)
+    def forward(self, move):
+        # print(move)
+        bert_output = self.description_forward(move["description"])
         bert_output = self.bert_nn1(bert_output)
         bert_output = self.relu(bert_output)
         bert_output = self.bert_nn2(bert_output)
@@ -52,20 +41,13 @@ class MoveEncoder(nn.Module):
         bert_output = self.bert_nn3(bert_output)
         bert_output = self.relu(bert_output)
 
-        type_output = self.type_forward(move.move_type)
-        damage_class_output = self.damage_class_forward(move.damage_class)
-        other_variables = torch.tensor(
-            [
-                move.power,
-                move.accuracy,
-                move.pp,
-                int(move.can_learn_machine),
-                move.priority,
-            ]
-        )
+        type_output = move["type"]
+        type_output = self.type_nn(type_output)
+        damage_class_output = move["damage_class"]
+        damage_class_output = self.damage_class_nn(damage_class_output)
         features = torch.cat(
             # 4, 4, 1, 5
-            (bert_output, type_output, damage_class_output, other_variables),
+            (bert_output, type_output, damage_class_output, move["other"]),
             dim=1,
         )
 
@@ -85,21 +67,9 @@ class MoveEncoder(nn.Module):
             truncation=True,
             max_length=256,
             add_special_tokens=True,
-        )
+        ).input_ids
         ids = ids.to(self.device)
-        bert_output = self.bert(ids).last_hidden_state[:, 0, :]
+        bert_output = self.bert(ids)
+        bert_output = bert_output.last_hidden_state[:, 0, :]
+        del ids
         return bert_output
-
-    # output (batch_size, 18)
-    def type_forward(self, move_type: str):
-        type_int = self.move_type_mapping[move_type]
-        one_hot_vecrtor_type = torch.nn.functional.one_hot(torch.tensor(type_int))
-        return one_hot_vecrtor_type
-
-    # output (batch_size, 3)
-    def damage_class_forward(self, damage_class: str):
-        damage_class_int = self.damage_class_mapping[damage_class]
-        one_hot_vecrtor_damage_type = torch.nn.functional.one_hot(
-            torch.tensor(damage_class_int)
-        )
-        return one_hot_vecrtor_damage_type
