@@ -14,16 +14,17 @@ class MoveEncoder(nn.Module):
     def __init__(self, device):
         super().__init__()
 
-        self.tokenizer = AutoTokenizer.from_pretrained("YituTech/conv-bert-base")
-        self.bert = AutoModel.from_pretrained("YituTech/conv-bert-base")
-        self.bert_nn1 = nn.Linear(768, 256)
-        self.bert_nn2 = nn.Linear(256, 32)
-        self.bert_nn3 = nn.Linear(32, 4)
+        # self.tokenizer = AutoTokenizer.from_pretrained("YituTech/conv-bert-base")
+        # self.bert = AutoModel.from_pretrained("YituTech/conv-bert-base")
+        # self.bert_nn1 = nn.Linear(768, 256)
+        # self.bert_nn2 = nn.Linear(256, 32)
+        # self.bert_nn3 = nn.Linear(32, 4)
 
         self.type_nn = nn.Linear(18, 4)
         self.damage_class_nn = nn.Linear(3, 1)
 
-        self.features_nn1 = nn.Linear(14, 32)
+        # self.features_nn1 = nn.Linear(14, 32)
+        self.features_nn1 = nn.Linear(10, 32)
         self.features_nn2 = nn.Linear(32, 64)
         self.features_nn3 = nn.Linear(64, 128)
 
@@ -33,13 +34,13 @@ class MoveEncoder(nn.Module):
 
     def forward(self, move):
         # print(move)
-        bert_output = self.description_forward(move["description"])
-        bert_output = self.bert_nn1(bert_output)
-        bert_output = self.relu(bert_output)
-        bert_output = self.bert_nn2(bert_output)
-        bert_output = self.relu(bert_output)
-        bert_output = self.bert_nn3(bert_output)
-        bert_output = self.relu(bert_output)
+        # bert_output = self.description_forward(move["description"])
+        # bert_output = self.bert_nn1(bert_output)
+        # bert_output = self.relu(bert_output)
+        # bert_output = self.bert_nn2(bert_output)
+        # bert_output = self.relu(bert_output)
+        # bert_output = self.bert_nn3(bert_output)
+        # bert_output = self.relu(bert_output)
 
         type_output = move["type"]
         type_output = self.type_nn(type_output)
@@ -47,7 +48,8 @@ class MoveEncoder(nn.Module):
         damage_class_output = self.damage_class_nn(damage_class_output)
         features = torch.cat(
             # 4, 4, 1, 5
-            (bert_output, type_output, damage_class_output, move["other"]),
+            # (bert_output, type_output, damage_class_output, move["other"]),
+            (type_output, damage_class_output, move["other"]),
             dim=1,
         )
 
@@ -57,7 +59,7 @@ class MoveEncoder(nn.Module):
         features = self.relu(features)
         output = self.features_nn3(features)
         # output = self.relu(output)
-        del features, bert_output, type_output, damage_class_output
+        del features, type_output, damage_class_output
         return output
 
     def description_forward(self, description: str):
