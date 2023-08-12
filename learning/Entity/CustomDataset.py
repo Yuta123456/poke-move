@@ -126,7 +126,7 @@ class PokemonMoveDataset(Dataset):
             _method = annotion[3]
         pokemon = self.pokemons[pokemon_id - 1]
         move = self.moves[move_id - 1]
-        return self.pokemon_to_vector(pokemon), self.move_to_vector(move), label
+        return self.pokemon_to_vector(pokemon), self.move_to_vector(move), label, move_id
 
     def pokemon_to_vector(self, pokemon: Pokemon):
         types_output = self.types_forward(pokemon.types)
